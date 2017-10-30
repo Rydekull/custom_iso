@@ -1,0 +1,15 @@
+FROM registry.access.redhat.com/rhel7:latest
+
+ARG RH_USERNAME
+ARG RH_PASSWORD
+ARG RH_POOL_ID
+ENV RH_USERNAME=${RH_USERNAME} RH_PASSWORD=${RH_PASSWORD} RH_POOL_ID=${RH_POOL_ID} 
+
+RUN subscription-manager register --username ${RH_USERNAME} --password ${RH_PASSWORD} ; subscription-manager attach --pool ${RH_POOL_ID} ; subscription-manager repos --disable '*' --enable rhel-7-server-rpms
+
+RUN yum update -y ; yum clean all
+
+RUN yum install https://ftp.acc.umu.se/mirror/fedora/epel/7/x86_64/e/epel-release-7-10.noarch.rpm -y
+RUN yum install p7zip xorriso syslinux createrepo -y
+
+WORKDIR /isobuildenv

@@ -1,0 +1,10 @@
+[rhel-7-server-rpms]
+metadata_expire = 86400
+baseurl = file:///srv/rpms/rhel-7-server-rpms
+ui_repoid_vars = releasever basearch
+sslverify = 1
+name = rhel-7-server-rpms
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+enabled = 1
+sslcacert = /etc/rhsm/ca/redhat-uep.pem
+gpgcheck = 1

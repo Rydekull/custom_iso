@@ -1,0 +1,6 @@
+[InstallMedia]
+name=Red Hat Enterprise Linux 7.4
+mediaid=1499751070.690815
+metadata_expire=-1
+gpgcheck=0
+cost=500

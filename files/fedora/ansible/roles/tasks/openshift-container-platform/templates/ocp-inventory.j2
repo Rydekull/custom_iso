@@ -1,0 +1,40 @@
+[OSEv3:children]
+masters
+nodes
+
+[OSEv3:vars]
+ansible_ssh_user=root
+
+openshift_deployment_type=openshift-enterprise
+openshift_disable_check=docker_storage,memory_availability
+
+openshift_master_default_subdomain={{ ansible_hostname }}.apps.{{ ".".join( ansible_domain.split('.')[1:]) }}
+
+openshift_master_identity_providers="[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]"
+openshift_master_htpasswd_users="{'admin': '$apr1$eRaxRkqV$GcFGHRQp68PvoeQNADSHh.','cloud-user': '$apr1$H0ByIC9C$r5dXextYcpWQSbtcV5lyY1','gregory': '$apr1$H0ByIC9C$r5dXextYcpWQSbtcV5lyY1','lucas': '$apr1$H0ByIC9C$r5dXextYcpWQSbtcV5lyY1'}"
+
+openshift_hosted_metrics_deploy=true
+openshift_metrics_install_metrics=true
+openshift_metrics_start_cluster=True
+#openshift_metrics_image_prefix=myregistry.se:5000/openshift3/
+openshift_metrics_hawkular_hostname=hawkular-metrics.{{ ansible_hostname }}.apps.{{ ".".join( ansible_domain.split('.')[1:]) }}
+openshift_metrics_cassandra_limits_memory=1Gi
+openshift_metrics_hawkular_limits_memory=2Gi
+openshift_metrics_heapster_limits_memory=1Gi
+#openshift_metrics_image_version=v3.6.173.0.5
+openshift_metrics_cassandra_nodeselector={"region":"infra"}
+openshift_metrics_hawkular_nodeselector={"region":"infra"}
+openshift_metrics_heapster_nodeselector={"region":"infra"}
+openshift_metrics_hawkular_agent_nodeselector={"region":"infra"}
+
+openshift_docker_additional_registries=registry.{{ ansible_fqdn }}
+openshift_docker_insecure_registries=172.30.0.0/16
+openshift_docker_disable_push_dockerhub=True
+openshift_docker_options=--selinux-enabled --log-driver=json-file --log-opt max-size=50m
+osm_controller_lease_ttl=30
+
+[masters]
+{{ ansible_fqdn }}
+
+[nodes]
+{{ ansible_fqdn }} openshift_schedulable=True openshift_node_labels="{'region': 'infra', 'zone': 'default'}"

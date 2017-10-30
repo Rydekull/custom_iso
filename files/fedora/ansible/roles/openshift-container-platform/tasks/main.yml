@@ -1,0 +1,42 @@
+---
+- name: Update all packages
+  package: name=* state=latest
+  tags: set_hostname
+
+- name: Install atomic-openshift-utils
+  package: name=atomic-openshift-utils state=latest
+
+- name: Install docker
+  package: name=docker state=latest
+
+- name: Enable docker service
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Preload local images
+  shell: for image in `ls *.tar`; do docker load -i $image; done
+  args:
+    chdir: /srv/images
+
+- name: Generating SSH key for root
+  user:
+    name: root
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+    ssh_key_file: .ssh/id_rsa
+
+- name: Inserting public SSH key into authorized_keys for root
+  authorized_key:
+    user: root
+    state: present
+    key: "{{ lookup('file', '/root/.ssh/id_rsa.pub') }}"
+
+- name: Installing OpenShift inventory file
+  template:
+    src: ocp-inventory.j2
+    dest: /root/ocp-inventory
+
+- name: Executing OpenShift Installation
+  shell: ansible-playbook -i /root/ocp-inventory -e openshift_disable_check=docker_image_availability,disk_availability,docker_storage,memory_availability /usr/share/ansible/openshift-ansible/playbooks/byo/config.yml

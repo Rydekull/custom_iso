@@ -1,0 +1,5 @@
+---
+- hosts: all
+  gather_facts: yes
+  roles:
+    - {role: 'openshift-container-platform', tags: 'openshift, openshift-container-platform'}
